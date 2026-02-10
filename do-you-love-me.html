@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Do you love me? | Interactive Card</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&family=Poppins:wght@400;600&display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #ffe6e9;
+            font-family: "Quicksand", sans-serif;
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            width: 100%;
+            max-width: 500px;
+            transition: all 0.4s ease;
+        }
+
+        /* Video styling to replace GIFs */
+        .video-asset {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 15px;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: block;
+        }
+
+        .question {
+            font-size: clamp(2rem, 8vw, 3.5rem);
+            margin-bottom: 2rem;
+            color: #d63384;
+            font-weight: 700;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            width: 100%;
+            height: 60px;
+            position: relative;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 50px;
+            padding: 12px 30px;
+            font-family: "Poppins", sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.3s, box-shadow 0.3s;
+            background-color: #ff6b81;
+            color: white;
+            box-shadow: 0px 4px 15px rgba(255, 107, 129, 0.4);
+            white-space: nowrap;
+        }
+
+        .insta-btn {
+            margin-top: 1.5rem;
+            background: linear-gradient(45deg, #f58529, #dd2a7b, #8134af, #515bd4);
+            box-shadow: 0px 6px 20px rgba(221, 42, 123, 0.4);
+        }
+
+        .insta-btn:hover {
+            transform: scale(1.12);
+            opacity: 0.95;
+        }
+
+        .no-btn {
+
+            z-index: 5;
+            transition: all 0.1s ease-out;
+        }
+
+        .btn:hover {
+            background-color: #ff4757;
+            transform: scale(1.1);
+        }
+
+        /* Result View */
+        .result-container {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .result-container.active {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Heart Loader */
+        .cssload-main {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cssload-heart {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            animation: cssload-heart 2.88s cubic-bezier(0.75, 0, 0.5, 1) infinite;
+        }
+
+        .cssload-heartL,
+        .cssload-heartR {
+            width: 50px;
+            height: 50px;
+            background-color: #ff0000;
+            position: absolute;
+            border-radius: 100%;
+        }
+
+        .cssload-heartL {
+            top: 0;
+            left: 0;
+        }
+
+        .cssload-heartR {
+            top: 0;
+            right: 0;
+        }
+
+        .cssload-square {
+            width: 50px;
+            height: 50px;
+            background-color: #ff0000;
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            transform: rotate(-45deg);
+        }
+
+        @keyframes cssload-heart {
+            0% {
+                transform: rotate(0deg) scale(1);
+            }
+
+            50% {
+                transform: rotate(360deg) scale(0.8);
+            }
+
+            100% {
+                transform: rotate(720deg) scale(1);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .video-asset {
+                max-width: 250px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Main Question View -->
+    <div class="question-container container" id="questionView">
+        <video class="video-asset" autoplay muted loop playsinline>
+            <source src="Reply-me-love.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <h2 class="question">DO YOU LOVE ME?</h2>
+        <div class="button-container">
+            <button class="yes-btn btn js-yes-btn">Yes</button>
+            <button class="no-btn btn js-no-btn" id="noBtn">No</button>
+        </div>
+    </div>
+
+    <!-- Loader View -->
+    <div class="cssload-main" id="loaderView">
+        <div class="cssload-heart">
+            <div class="cssload-heartL"></div>
+            <div class="cssload-heartR"></div>
+            <div class="cssload-square"></div>
+        </div>
+        <p style="margin-top: 20px; color: #ff6b81; font-weight: 600;">Thinking...</p>
+    </div>
+
+    <!-- Result View -->
+    <div class="result-container container" id="resultView">
+        <video class="video-asset" autoplay loop playsinline id="resultVideo">
+            <source src="Love-me.mp4" type="video/mp4">
+        </video>
+        <h2 class="question">I knew it😍!</h2>
+
+        <!-- ADD THIS BUTTON -->
+        <button class="btn insta-btn" id="instaBtn">
+            Do this one Task 💕
+        </button>
+    </div>
+
+
+    <script>
+        const questionView = document.getElementById("questionView");
+        const resultView = document.getElementById("resultView");
+        const loaderView = document.getElementById("loaderView");
+        const yesBtn = document.querySelector(".js-yes-btn");
+        const noBtn = document.getElementById("noBtn");
+
+        // Moves the No button when the user tries to click/hover
+        function moveNoButton() {
+            const btnWidth = noBtn.offsetWidth;
+            const btnHeight = noBtn.offsetHeight;
+
+            const maxX = window.innerWidth - btnWidth - 30;
+            const maxY = window.innerHeight - btnHeight - 30;
+
+            const randomX = Math.floor(Math.random() * maxX);
+            const randomY = Math.floor(Math.random() * maxY);
+
+            noBtn.style.position = "fixed";   // move ONLY when escaping
+            noBtn.style.left = `${randomX}px`;
+            noBtn.style.top = `${randomY}px`;
+        }
+
+
+        noBtn.addEventListener("mouseover", moveNoButton);
+        noBtn.addEventListener("touchstart", (e) => {
+            e.preventDefault();
+            moveNoButton();
+        });
+
+
+        yesBtn.addEventListener("click", () => {
+            // Transition effect
+            questionView.style.display = "none";
+            loaderView.style.display = "flex";
+
+            setTimeout(() => {
+                loaderView.style.display = "none";
+                resultView.classList.add('active');
+                // Ensure result video plays
+                const resVid = document.getElementById('resultVideo');
+                resVid.play().catch(e => console.log("Auto-play blocked, user interaction required"));
+            }, 2000);
+        });
+
+        const instaBtn = document.getElementById("instaBtn");
+
+        instaBtn.addEventListener("click", () => {
+            window.open("https://www.instagram.com/its_saini_1305/", "_blank");
+        });
+
+    </script>
+
+</body>
+
+</html>

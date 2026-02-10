@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Heart Animation | @coding.stella</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html,
+    body {
+      height: 100%;
+      padding: 0;
+      margin: 0;
+      background: #000;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
+    }
+
+    /* Container for the heart canvas to allow fading out */
+    #canvas-container {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      transition: opacity 1.5s ease-in-out;
+    }
+
+    canvas {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* --- STYLISH BUTTON --- 
+      Glassmorphism effect with glowing shadow
+    */
+    #center-btn {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      /* Start hidden and scaled down */
+      transform: translate(-50%, -50%) scale(0.5);
+      padding: 16px 40px;
+
+      /* Glass effect */
+      background: rgba(234, 128, 176, 0.15);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(234, 128, 176, 0.5);
+
+      border-radius: 50px;
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      z-index: 10;
+      opacity: 0;
+      pointer-events: none;
+      /* Prevents clicking when hidden */
+
+      /* Smooth appearance transition */
+      transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 0 15px rgba(234, 128, 176, 0.3);
+    }
+
+    /* State when button is visible */
+    #center-btn.visible {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+      pointer-events: auto;
+      animation: gentlePulse 3s infinite ease-in-out;
+    }
+
+    /* Hover effect */
+    #center-btn:hover {
+      background: rgba(234, 128, 176, 0.4);
+      box-shadow: 0 0 30px rgba(234, 128, 176, 0.6),
+        0 0 60px rgba(234, 128, 176, 0.3);
+      border-color: rgba(255, 255, 255, 0.8);
+      transform: translate(-50%, -50%) scale(1.05);
+    }
+
+    @keyframes gentlePulse {
+      0% {
+        box-shadow: 0 0 15px rgba(234, 128, 176, 0.3);
+      }
+
+      50% {
+        box-shadow: 0 0 25px rgba(234, 128, 176, 0.6);
+      }
+
+      100% {
+        box-shadow: 0 0 15px rgba(234, 128, 176, 0.3);
+      }
+    }
+
+    /* --- NEXT PAGE SECTION ---
+    */
+    #next-page {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, #1a0b10 0%, #000000 100%);
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 1.5s ease;
+    }
+
+    #next-page.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #next-page h1 {
+      font-size: 3.5rem;
+      margin-bottom: 20px;
+      background: linear-gradient(45deg, #fff, #ea80b0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+      transform: translateY(20px);
+      animation: slideUp 1s forwards 0.5s;
+      opacity: 0;
+    }
+
+    #next-page p {
+      font-size: 1.2rem;
+      color: #ccc;
+      max-width: 600px;
+      text-align: center;
+      line-height: 1.6;
+      transform: translateY(20px);
+      animation: slideUp 1s forwards 0.8s;
+      opacity: 0;
+    }
+
+    @keyframes slideUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .back-btn {
+      margin-top: 40px;
+      padding: 10px 30px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 30px;
+      background: transparent;
+      color: #ea80b0;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+      opacity: 0;
+      animation: slideUp 1s forwards 1.2s;
+    }
+
+    .back-btn:hover {
+      background: #ea80b0;
+      color: #fff;
+      box-shadow: 0 0 20px rgba(234, 128, 176, 0.4);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Wrapper for the heart animation -->
+  <div id="canvas-container">
+    <canvas id="pinkboard"></canvas>
+
+    <!-- The Button -->
+    <button id="center-btn" onclick="openLovePage()">Click Me</button>
+  </div>
+
+
+  <script>
+    /* --- BUTTON & PAGE LOGIC --- 
+    */
+
+    // Show the button after 5 seconds
+    setTimeout(() => {
+      const btn = document.getElementById('center-btn');
+      btn.classList.add('visible');
+    }, 5000);
+
+    function openNextPage() {
+      // Fade out the heart
+      document.getElementById('canvas-container').style.opacity = '0';
+
+      // Prevent interaction with heart layer
+      setTimeout(() => {
+        document.getElementById('canvas-container').style.display = 'none';
+
+        // Fade in next page
+        document.getElementById('next-page').classList.add('active');
+      }, 1500); // Matches the CSS transition time
+    }
+
+    function goBack() {
+      document.getElementById('next-page').classList.remove('active');
+
+      setTimeout(() => {
+        const container = document.getElementById('canvas-container');
+        container.style.display = 'block';
+        // Small delay to allow display:block to apply before changing opacity for transition
+        requestAnimationFrame(() => {
+          container.style.opacity = '1';
+        });
+      }, 500);
+    }
+
+
+    /* --- ORIGINAL HEART ANIMATION CODE --- 
+    */
+    let settings = {
+      particles: {
+        length: 500,
+        duration: 2,
+        velocity: 100,
+        effect: -0.75,
+        size: 30
+      }
+    };
+
+    // Polyfill for requestAnimationFrame
+    (function () {
+      let lastTime = 0;
+      let vendors = ["ms", "moz", "webkit", "o"];
+      for (let x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+        window.requestAnimationFrame = window[vendors[x] + "RequestAnimationFrame"];
+        window.cancelAnimationFrame =
+          window[vendors[x] + "CancelAnimationFrame"] ||
+          window[vendors[x] + "CancelRequestAnimationFrame"];
+      }
+      if (!window.requestAnimationFrame) {
+        window.requestAnimationFrame = function (callback) {
+          let currTime = new Date().getTime();
+          let timeToCall = Math.max(0, 16 - (currTime - lastTime));
+          let id = window.setTimeout(function () {
+            callback(currTime + timeToCall);
+          }, timeToCall);
+          lastTime = currTime + timeToCall;
+          return id;
+        };
+      }
+      if (!window.cancelAnimationFrame) {
+        window.cancelAnimationFrame = function (id) {
+          clearTimeout(id);
+        };
+      }
+    })();
+
+    // Point class
+    function Point(x, y) {
+      this.x = x || 0;
+      this.y = y || 0;
+    }
+    Point.prototype.clone = function () {
+      return new Point(this.x, this.y);
+    };
+    Point.prototype.length = function (length) {
+      if (length === undefined)
+        return Math.sqrt(this.x * this.x + this.y * this.y);
+      this.normalize();
+      this.x *= length;
+      this.y *= length;
+      return this;
+    };
+    Point.prototype.normalize = function () {
+      let length = this.length();
+      this.x /= length;
+      this.y /= length;
+      return this;
+    };
+
+    // Particle class
+    function Particle() {
+      this.position = new Point();
+      this.velocity = new Point();
+      this.acceleration = new Point();
+      this.age = 0;
+    }
+    Particle.prototype.initialize = function (x, y, dx, dy) {
+      this.position.x = x;
+      this.position.y = y;
+      this.velocity.x = dx;
+      this.velocity.y = dy;
+      this.acceleration.x = dx * settings.particles.effect;
+      this.acceleration.y = dy * settings.particles.effect;
+      this.age = 0;
+    };
+    Particle.prototype.update = function (deltaTime) {
+      this.position.x += this.velocity.x * deltaTime;
+      this.position.y += this.velocity.y * deltaTime;
+      this.velocity.x += this.acceleration.x * deltaTime;
+      this.velocity.y += this.acceleration.y * deltaTime;
+      this.age += deltaTime;
+    };
+    Particle.prototype.draw = function (context, image) {
+      function ease(t) {
+        return --t * t * t + 1;
+      }
+      let size = image.width * ease(this.age / settings.particles.duration);
+      context.globalAlpha = 1 - this.age / settings.particles.duration;
+      context.drawImage(
+        image,
+        this.position.x - size / 2,
+        this.position.y - size / 2,
+        size,
+        size
+      );
+    };
+
+    // ParticlePool
+    function ParticlePool(length) {
+      this.particles = new Array(length);
+      for (let i = 0; i < this.particles.length; i++) {
+        this.particles[i] = new Particle();
+      }
+      this.firstActive = 0;
+      this.firstFree = 0;
+      this.duration = settings.particles.duration;
+    }
+    ParticlePool.prototype.add = function (x, y, dx, dy) {
+      this.particles[this.firstFree].initialize(x, y, dx, dy);
+      this.firstFree++;
+      if (this.firstFree === this.particles.length) this.firstFree = 0;
+      if (this.firstActive === this.firstFree) this.firstActive++;
+      if (this.firstActive === this.particles.length) this.firstActive = 0;
+    };
+    ParticlePool.prototype.update = function (deltaTime) {
+      let i;
+      if (this.firstActive < this.firstFree) {
+        for (i = this.firstActive; i < this.firstFree; i++) {
+          this.particles[i].update(deltaTime);
+        }
+      }
+      if (this.firstFree < this.firstActive) {
+        for (i = this.firstActive; i < this.particles.length; i++) {
+          this.particles[i].update(deltaTime);
+        }
+        for (i = 0; i < this.firstFree; i++) {
+          this.particles[i].update(deltaTime);
+        }
+      }
+      while (
+        this.particles[this.firstActive].age >= this.duration &&
+        this.firstActive !== this.firstFree
+      ) {
+        this.firstActive++;
+        if (this.firstActive === this.particles.length) this.firstActive = 0;
+      }
+    };
+    ParticlePool.prototype.draw = function (context, image) {
+      let i;
+      if (this.firstActive < this.firstFree) {
+        for (i = this.firstActive; i < this.firstFree; i++) {
+          this.particles[i].draw(context, image);
+        }
+      }
+      if (this.firstFree < this.firstActive) {
+        for (i = this.firstActive; i < this.particles.length; i++) {
+          this.particles[i].draw(context, image);
+        }
+        for (i = 0; i < this.firstFree; i++) {
+          this.particles[i].draw(context, image);
+        }
+      }
+    };
+
+    // Heart animation
+    (function (canvas) {
+      let context = canvas.getContext("2d"),
+        particles = new ParticlePool(settings.particles.length),
+        particleRate = settings.particles.length / settings.particles.duration,
+        time;
+
+      function pointOnHeart(t) {
+        return new Point(
+          160 * Math.pow(Math.sin(t), 3),
+          130 * Math.cos(t) -
+          50 * Math.cos(2 * t) -
+          20 * Math.cos(3 * t) -
+          10 * Math.cos(4 * t) + 25
+        );
+      }
+
+      let image = (function () {
+        let canvas = document.createElement("canvas"),
+          context = canvas.getContext("2d");
+        canvas.width = settings.particles.size;
+        canvas.height = settings.particles.size;
+
+        function to(t) {
+          let point = pointOnHeart(t);
+          point.x =
+            settings.particles.size / 2 +
+            (point.x * settings.particles.size) / 350;
+          point.y =
+            settings.particles.size / 2 -
+            (point.y * settings.particles.size) / 350;
+          return point;
+        }
+
+        context.beginPath();
+        let t = -Math.PI;
+        let point = to(t);
+        context.moveTo(point.x, point.y);
+        while (t < Math.PI) {
+          t += 0.01;
+          point = to(t);
+          context.lineTo(point.x, point.y);
+        }
+        context.closePath();
+        context.fillStyle = "#ea80b0";
+        context.fill();
+
+        let image = new Image();
+        image.src = canvas.toDataURL();
+        return image;
+      })();
+
+      function render() {
+        requestAnimationFrame(render);
+        let newTime = new Date().getTime() / 1000,
+          deltaTime = newTime - (time || newTime);
+        time = newTime;
+
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        let amount = particleRate * deltaTime;
+        for (let i = 0; i < amount; i++) {
+          let pos = pointOnHeart(Math.PI - 2 * Math.PI * Math.random());
+          let dir = pos.clone().length(settings.particles.velocity);
+          particles.add(
+            canvas.width / 2 + pos.x,
+            canvas.height / 2 - pos.y,
+            dir.x,
+            -dir.y
+          );
+        }
+
+        particles.update(deltaTime);
+        particles.draw(context, image);
+      }
+
+      function onResize() {
+        canvas.width = canvas.clientWidth;
+        canvas.height = canvas.clientHeight;
+      }
+      window.onresize = onResize;
+
+      setTimeout(function () {
+        onResize();
+        render();
+      }, 10);
+    })(document.getElementById("pinkboard"));
+    function openLovePage() {
+      window.location.href = "do-you-love-me.html";
+    }
+
+  </script>
+</body>
+
+</html>

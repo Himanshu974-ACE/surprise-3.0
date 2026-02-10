@@ -1,0 +1,51 @@
+<html>
+<head>
+<title></title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	
+	<div class="background">
+		<video autoplay muted loop class="video">
+			<source src="2.mp4" type="video/mp4" class="v"></source>
+		</video>
+		
+		<div class="login">
+			<div class="login-form">
+				<h1>LOGIN</h1>
+				<form onsubmit="return validateLogin()">
+					<input type="text" id="username" placeholder="UserName"><br><br>
+					<input type="password" id="password" placeholder="Password"><br><br><br>
+					<button type="submit">Login</button>
+					<!-- Message will appear here -->
+					<p id="message" style="color:rgb(221, 39, 136); font-weight:bold;"></p>
+				</form>
+			</div>
+		</div>
+	</div>
+
+<script>
+function validateLogin() {
+    const user = document.getElementById("username").value;
+    const pass = document.getElementById("password").value;
+    const msg = document.getElementById("message");
+
+    if(user === "sohu" && pass === "1305") {
+        msg.textContent = "Login Successful";
+        msg.style.color = "rgb(221, 39, 136)"; // match layout accent color
+        // Redirect after showing message
+        setTimeout(() => {
+            window.location.href = "heartanimation.html";
+        }, 1000); // waits 1 second before redirect
+        return false; 
+    } else {
+        msg.textContent = "Invalid Username or Password!";
+        msg.style.color = "red"; // red error text
+        return false;
+    }
+}
+</script>
+
+</body>
+</html>
